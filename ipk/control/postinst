@@ -1,0 +1,29 @@
+#!/bin/sh
+# Postinstall: install the service to /var/lib/webosbrew, set up boot autostart, start it.
+# Runs as root under Homebrew Channel's elevated (opkg) install.
+APPID=com.github.amancini.alexafauxmo
+SVC_DIR=/var/lib/webosbrew/fauxmo
+INITD=/var/lib/webosbrew/init.d
+
+mkdir -p "$SVC_DIR" "$INITD"
+
+# locate the installed app's fauxmo.js (cryptofs for Channel installs, developer as fallback)
+SRC=$(find /media/cryptofs/apps /media/developer/apps -maxdepth 5 -name fauxmo.js 2>/dev/null \
+      | grep "$APPID" | head -1)
+[ -n "$SRC" ] && cp -f "$SRC" "$SVC_DIR/fauxmo.js"
+
+# boot autostart hook (Homebrew Channel runs run-parts /var/lib/webosbrew/init.d at boot)
+cat > "$INITD/alexafauxmo" <<'EOS'
+#!/bin/sh
+mkdir -p /var/lib/webosbrew/fauxmo
+if pgrep -f fauxmo.js >/dev/null 2>&1; then exit 0; fi
+/usr/bin/node /var/lib/webosbrew/fauxmo/fauxmo.js >/tmp/fauxmo.log 2>&1 &
+exit 0
+EOS
+chmod +x "$INITD/alexafauxmo"
+
+# start now
+pkill -f fauxmo.js 2>/dev/null || true
+sleep 1
+[ -f "$SVC_DIR/fauxmo.js" ] && /usr/bin/node "$SVC_DIR/fauxmo.js" >/tmp/fauxmo.log 2>&1 &
+exit 0

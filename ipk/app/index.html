@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alexa Fauxmo</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font-family: system-ui, Arial, sans-serif; background:#111827; color:#e5e7eb;
+         display:flex; min-height:100vh; align-items:center; justify-content:center; }
+  .card { max-width:720px; padding:48px; }
+  h1 { font-size:40px; margin:0 0 4px; color:#2dd4bf; }
+  .sub { color:#9ca3af; margin:0 0 28px; font-size:20px; }
+  .status { display:inline-block; padding:8px 16px; border-radius:999px; font-size:20px; margin-bottom:28px; }
+  .ok { background:#064e3b; color:#6ee7b7; }
+  .bad { background:#7f1d1d; color:#fecaca; }
+  table { width:100%; border-collapse:collapse; font-size:20px; }
+  td { padding:10px 8px; border-bottom:1px solid #1f2937; }
+  td.cmd { color:#2dd4bf; white-space:nowrap; }
+  .tip { margin-top:28px; color:#9ca3af; font-size:18px; line-height:1.5; }
+  code { background:#1f2937; padding:2px 6px; border-radius:6px; color:#e5e7eb; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Alexa Fauxmo</h1>
+    <p class="sub">Control this TV with Amazon Alexa &mdash; no hub, no cloud.</p>
+    <div id="status" class="status">checking service&hellip;</div>
+    <table>
+      <tr><td class="cmd">"Alexa, turn TV on / off"</td><td>screen on / off</td></tr>
+      <tr><td class="cmd">"Alexa, set TV to 30%"</td><td>volume</td></tr>
+      <tr><td class="cmd">"Alexa, turn Netflix on"</td><td>launch Netflix</td></tr>
+      <tr><td class="cmd">"Alexa, turn Disney on"</td><td>launch Disney+</td></tr>
+      <tr><td class="cmd">"Alexa, turn Prime Video on"</td><td>launch Prime Video</td></tr>
+      <tr><td class="cmd">"Alexa, turn YouTube on"</td><td>launch YouTube</td></tr>
+      <tr><td class="cmd">"Alexa, set Channel to 5%"</td><td>go to channel 5</td></tr>
+    </table>
+    <p class="tip">First time: say <code>"Alexa, discover devices"</code>. The service starts
+       automatically on every boot. Edit <code>ROOM</code> in
+       <code>/var/lib/webosbrew/fauxmo/fauxmo.js</code> to add a room name.</p>
+  </div>
+<script>
+  // Prova a contattare il servizio locale (porta 80) per mostrarne lo stato.
+  function setStatus(ok, txt){
+    var el=document.getElementById('status');
+    el.className='status '+(ok?'ok':'bad'); el.textContent=txt;
+  }
+  try {
+    var x=new XMLHttpRequest();
+    x.open('GET','http://127.0.0.1/api/webosfauxmouser/lights',true);
+    x.timeout=4000;
+    x.onload=function(){ setStatus(true,'service running • '+Object.keys(JSON.parse(x.responseText||'{}')).length+' devices'); };
+    x.onerror=x.ontimeout=function(){ setStatus(false,'service not reachable — try rebooting the TV'); };
+    x.send();
+  } catch(e){ setStatus(false,'service status unknown'); }
+</script>
+</body>
+</html>

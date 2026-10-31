@@ -1,0 +1,14 @@
+{
+  "id": "com.github.amancini.alexafauxmo",
+  "version": "1.0.0",
+  "type": "web",
+  "title": "Alexa Fauxmo",
+  "appDescription": "Control an LG webOS TV with Amazon Alexa via an emulated Philips Hue bridge: power, volume, app launch (Netflix/Disney+/Prime/YouTube) and channel.",
+  "iconUri": "https://raw.githubusercontent.com/amancini/webos-alexa-fauxmo/main/ipk/app/largeicon.png",
+  "sourceUrl": "https://github.com/amancini/webos-alexa-fauxmo",
+  "rootRequired": true,
+  "ipkUrl": "https://github.com/amancini/webos-alexa-fauxmo/releases/download/v1.0.0/com.github.amancini.alexafauxmo_1.0.0_all.ipk",
+  "ipkHash": {
+    "sha256": "cb9a1f0deef18bab9c9f7c3e9a4c288216af7272357e70403adcc87d613868d9"
+  }
+}

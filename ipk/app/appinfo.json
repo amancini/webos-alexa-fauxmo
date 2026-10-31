@@ -1,0 +1,15 @@
+{
+  "id": "com.github.amancini.alexafauxmo",
+  "version": "1.0.0",
+  "vendor": "amancini",
+  "type": "web",
+  "main": "index.html",
+  "title": "Alexa Fauxmo",
+  "icon": "icon.png",
+  "largeIcon": "largeicon.png",
+  "bgColor": "#111827",
+  "iconColor": "#2dd4bf",
+  "appDescription": "Control your LG webOS TV with Amazon Alexa (emulated Philips Hue bridge).",
+  "disableBackHistoryAPI": true,
+  "requiredPermissions": ["time.query", "activity.operation"]
+}

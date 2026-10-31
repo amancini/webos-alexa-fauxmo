@@ -1,0 +1,11 @@
+Package: com.github.amancini.alexafauxmo
+Version: 1.0.0
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: amancini
+Homepage: https://github.com/amancini/webos-alexa-fauxmo
+Description: Control an LG webOS TV with Amazon Alexa via an emulated Philips Hue bridge.
+ Exposes power, volume, app launch (Netflix/Disney+/Prime/YouTube) and channel
+ as Alexa-discoverable devices. Runs an on-TV node service, autostarted on boot.
+webOS-Package-Format-Version: 2

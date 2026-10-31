@@ -1,0 +1,6 @@
+#!/bin/sh
+# Pre-remove: stop the service and remove the boot autostart hook.
+pkill -f fauxmo.js 2>/dev/null || true
+rm -f /var/lib/webosbrew/init.d/alexafauxmo
+rm -f /var/lib/webosbrew/fauxmo/fauxmo.js
+exit 0
