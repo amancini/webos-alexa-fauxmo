@@ -67,21 +67,31 @@ After editing, re-run the installer (or restart node).
 - **HTTP** (TCP 80): serves `/description.xml` and a minimal Hue v1 REST API
   (`/api/<user>/lights`, `PUT .../state`).
 - State changes are mapped to **`luna-send`** calls:
-  - power → `com.webos.service.tvpower/power/turnOnScreen` / `turnOffScreen`
+  - power on → `com.webos.service.tvpower/power/turnOnScreen`
+  - power off → screen off (`turnOffScreen`) **or** real standby
+    (`power/powerOff {"reason":"remoteKey"}`), per the `POWER_OFF` config
   - volume → `com.webos.service.audio/media/setVolume`
   - apps → `com.webos.service.applicationmanager/launch`
   - channel → `com.webos.service.apiadapter/tv/openChannel`
 
-"Off" uses **screen off** (not standby) so the TV stays on the network and Alexa can turn
-it back **on** — standby would cut power to the service. Expect ~10–15 W while "off".
+### Power-off mode (`POWER_OFF`)
+
+- `'screen'` (default): **screen off** only — audio muted, TV stays on the network,
+  so Alexa can turn it back **on**. ~10–15 W idle.
+- `'standby'`: **real power off** — ~0.5 W, but the service dies with the TV, so Alexa
+  can **no longer** turn it on. You wake it with the remote, or with **Wake-on-LAN**
+  (verified working on webOS 4.x when *Mobile TV On* is enabled: a magic packet to the
+  TV's MAC wakes it in seconds, after which this service autostarts). WoL must come from
+  another always-on device on the LAN — the TV can't wake itself.
 
 ## Limitations
 
 - **Channel** is set as a percentage (5% = channel 5): Hue only understands on/off + brightness.
 - Some newer Echo models restrict emulated-Hue discovery; if discovery fails, retry, or
   try adding via the Alexa app under Philips Hue.
-- Power **on from full standby** needs Wake-on-LAN sent by another always-on device; this
-  service can't do it while the TV is fully off. Screen-off mode avoids the problem.
+- With `POWER_OFF='standby'`, power **on from full standby** needs Wake-on-LAN sent by
+  another always-on device; this service can't do it while the TV is off. The default
+  screen-off mode avoids the problem.
 
 ## Disclaimer
 

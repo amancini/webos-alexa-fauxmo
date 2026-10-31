@@ -19,6 +19,12 @@ var exec = require('child_process').exec;
 var ROOM = '';
 var HTTP_PORT = 80;            // Alexa (older Echos) expect the Hue bridge on port 80
 var MAC = '00:17:88:12:ab:cd'; // fake bridge MAC; change if you run more than one bridge
+// What "turn TV off" does:
+//   'screen'  = screen off only (audio muted), TV stays reachable so Alexa can
+//               turn it back ON. ~10-15W idle. (default)
+//   'standby' = real power off / standby, ~0.5W. BUT the service dies with the TV,
+//               so Alexa can NO LONGER turn it on - you need the remote.
+var POWER_OFF = 'screen';
 /* App ids below are the webOS application ids. Find yours with:
  *   luna-send -n 1 -w 3000 luna://com.webos.service.applicationmanager/listApps '{}'
  */
@@ -56,6 +62,8 @@ function luna(uri, payload) {
 function launchApp(id) { luna('com.webos.service.applicationmanager/launch', { id: id }); }
 function screenOn()    { luna('com.webos.service.tvpower/power/turnOnScreen', {}); }
 function screenOff()   { luna('com.webos.service.tvpower/power/turnOffScreen', {}); }
+function standby()     { luna('com.webos.service.tvpower/power/powerOff', { reason: 'remoteKey' }); }
+function tvOff()       { if (POWER_OFF === 'standby') standby(); else screenOff(); }
 function setVolume(v)  { luna('com.webos.service.audio/media/setVolume', { volume: v }); }
 function openChannel(n){ luna('com.webos.service.apiadapter/tv/openChannel', { channelNumber: String(n) }); }
 function briToPct(bri) { return Math.max(0, Math.min(100, Math.round(bri / 254 * 100))); }
@@ -63,7 +71,7 @@ function briToPct(bri) { return Math.max(0, Math.min(100, Math.round(bri / 254 *
 /* ---- devices (Hue "lights") ---- */
 var devices = {
   '1': { name: nm('TV'), bri: 254, on: false,
-    onSet:  function (v) { this.on = v; if (v) screenOn(); else screenOff(); },
+    onSet:  function (v) { this.on = v; if (v) screenOn(); else tvOff(); },
     briSet: function (b) { this.bri = b; this.on = true; setVolume(briToPct(b)); } },
   '2': { name: nm('Netflix'), bri: 254, on: false,
     onSet:  function (v) { this.on = v; if (v) launchApp(APPS.netflix); },
